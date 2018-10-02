@@ -1,0 +1,151 @@
+<html>
+  <head>
+    <title>LedFS-Mock Web Interface</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.17/css/uikit.min.css" />
+
+    <!-- UIkit JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.17/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.17/js/uikit-icons.min.js"></script>
+  </head>
+  <body>
+    <div id="app" class="uk-inline">
+      <div class="uk-dark uk-background-dark uk-padding">
+        <h1>LedFS-Mock Web Interface</h1>
+
+        <div class="stat-ali">
+          <p>Status</p>
+          <span v-if="status === states.syncd" class="uk-label uk-label-success">IN SYNC</span>
+          <span v-if="status === states.active" class="uk-label uk-label-warning">ON</span>
+          <span v-if="status === states.failed" class="uk-label uk-label-danger">ERROR</span>
+          <span v-if="status === states.off" class="uk-label uk-label-danger">OFF</span>
+        </div>
+
+        <hr/>
+
+        <ul uk-accordion>
+            <li>
+                <a class="uk-accordion-title" href="#">Configuration</a>
+                <div class="uk-accordion-content">
+                  <h3>Led Count</h3>
+                  <input type="number" class="uk-input" min="0" value="24"/>
+
+                  <h3>Led Freq (hz)</h3>
+                  <select class="uk-select">
+                    <option>8000</option>
+                  </select>
+
+                  <!-- TODO: make read-only -->
+                  <h3>DMA Channel</h3>
+                  <input type="number" value="10" class="uk-input" readonly/>
+
+                  <h3>Led brightness</h3>
+                  <p>{{options.brightness}}</p>
+                  <input type="range" class="uk-range" v-model="options.brightness" min="0" max="255"/>
+                </div>
+            </li>
+            <li>
+                <a class="uk-accordion-title" href="#">Visualization</a>
+                <div class="uk-accordion-content">
+                  <div class="uk-placeholder uk-text-center">Choose a LED layout and count to start visualizing.</div>
+                  <h3>Color</h3>
+                  <input type="color" />
+
+                  <h3>Tint</h3>
+                  <input type="color" />
+
+                  <h3>Layout</h3>
+                  <select class="uk-select">
+                    <option>Ring</option>
+                    <option>Strip</option>
+                    <option>Flex-Strip</option>
+                    <option>Grid</option>
+                  </select>
+
+                  <h3>Count</h3>
+                  <input type="number" v-model="viz.ledCount" min="1" class="uk-input"/>
+
+                  <h3>Animation Speed</h3>
+                  <input type="number" class="uk-input" min="0.25" max="2.0" v-model="viz.animFactor"/>
+                </div>
+            </li>
+        </ul>
+
+        <div class="btn-grp">
+          <button class="uk-button uk-button-small">
+            Import
+          </button>
+          <button class="uk-button uk-button-secondary uk-button-small">
+            Export
+          </button>
+          <button class="uk-button uk-button-primary uk-button-small">
+            Update
+          </button>
+          <button class="uk-button uk-button-danger uk-button-small">
+            Halt
+          </button>
+        </div>
+      </div>
+
+      <div v-if="loading" class="uk-overlay-primary uk-position-cover"></div>
+      <div v-if="loading" class="uk-overlay uk-position-bottom uk-light">
+        <p>One Moment, Syncronizing Configuration.</p>
+        <span class="uk-margin-small-right" uk-spinner="ratio: 3"></span>
+      </div>
+    </div>
+
+    <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        states: {
+          syncd: 'syncd',
+          active: 'active',
+          failed: 'failed',
+          off: 'off',
+        },
+
+        loading: false,
+        status: 'active',
+        options: {
+          brightness: 200,
+        },
+        viz: {
+          animFactor: 1.0,
+        },
+        message: 'Hello Vue!'
+      }
+    })
+    </script>
+    <style>
+      .stat-ali {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: baseline;
+        align-content: baseline;
+      }
+
+      .stat-ali .uk-label {
+        display: inline-table;
+        margin-left: 40px;
+        flex-grow: 0;
+        flex-shrink: 0;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .btn-grp {
+        margin-top: 50px;
+      }
+    </style>
+  </body>
+</html>
